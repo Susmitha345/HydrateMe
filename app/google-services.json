@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "418456944287",
+    "project_id": "hydratemee-80c5d",
+    "storage_bucket": "hydratemee-80c5d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:418456944287:android:7c08ce73be0115e385acaa",
+        "android_client_info": {
+          "package_name": "com.uk.ac.tees.mad.hydrateme"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDe2K5W6A9nJoAyh_YM2EMhvmTniixByAI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
