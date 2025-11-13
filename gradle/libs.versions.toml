@@ -32,6 +32,7 @@ firebaseFirestore = "26.0.2"
 firebaseDatabase = "22.0.1"
 supabase = "3.2.5"
 accompanist = "0.37.3"
+firebaseFirestoreKtx = "26.0.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -108,6 +109,7 @@ supabase-storage = { module = "io.github.jan-tennert.supabase:storage-kt" }
 
 # Accompanist
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
+firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
 
 
 

@@ -1,4 +1,4 @@
-package com.uk.ac.tees.mad.habitloop.presentation.auth.login
+package com.uk.ac.tees.mad.hydrateme.presentation.auth.login
 
 sealed interface LoginAction {
     data class OnEmailChange(val email: String) : LoginAction

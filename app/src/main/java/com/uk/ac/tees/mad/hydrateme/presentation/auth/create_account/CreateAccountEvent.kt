@@ -1,6 +1,6 @@
-package com.uk.ac.tees.mad.habitloop.presentation.auth.create_account
+package com.uk.ac.tees.mad.hydrateme.presentation.auth.create_account
 
-import com.uk.ac.tees.mad.habitloop.domain.util.DataError
+import com.uk.ac.tees.mad.hydrateme.domain.util.DataError
 
 sealed interface CreateAccountEvent {
     data object Success : CreateAccountEvent

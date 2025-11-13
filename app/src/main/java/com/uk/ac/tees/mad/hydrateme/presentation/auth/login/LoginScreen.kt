@@ -1,4 +1,4 @@
-package com.uk.ac.tees.mad.habitloop.presentation.auth.login
+package com.uk.ac.tees.mad.hydrateme.presentation.auth.login
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -31,9 +31,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.uk.ac.tees.mad.habitloop.R
-import com.uk.ac.tees.mad.habitloop.domain.util.ObserveAsEvents
-import com.uk.ac.tees.mad.habitloop.ui.theme.HabitLoopTheme
+import com.uk.ac.tees.mad.hydrateme.domain.util.ObserveAsEvents
+import com.uk.ac.tees.mad.hydrateme.R
+import com.uk.ac.tees.mad.hydrateme.presentation.auth.login.LoginAction
+import com.uk.ac.tees.mad.hydrateme.presentation.auth.login.LoginEvent
+import com.uk.ac.tees.mad.hydrateme.presentation.auth.login.LoginState
+import com.uk.ac.tees.mad.hydrateme.presentation.auth.login.LoginViewModel
+import com.uk.ac.tees.mad.hydrateme.ui.theme.HydrateMeTheme
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -84,7 +88,7 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Image(
-                painter = painterResource(id = R.drawable.habitloop_logo),
+                painter = painterResource(id = R.drawable.hydrateme_logo),
                 contentDescription = "App Logo",
                 modifier = Modifier.size(120.dp)
             )
@@ -139,7 +143,7 @@ fun LoginScreen(
 @Preview(showBackground = true)
 @Composable
 private fun LoginScreenPreview() {
-    HabitLoopTheme {
+    HydrateMeTheme {
         LoginScreen(
             state = LoginState(),
             onAction = {},

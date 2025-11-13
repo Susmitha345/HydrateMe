@@ -1,4 +1,4 @@
-package com.uk.ac.tees.mad.habitloop.presentation.navigation
+package com.uk.ac.tees.mad.hydrateme.presentation.navigation
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -6,33 +6,28 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.google.firebase.auth.FirebaseAuth
-import com.uk.ac.tees.mad.habitloop.presentation.add_habbit.AddHabbitRoot
-import com.uk.ac.tees.mad.habitloop.presentation.auth.create_account.CreateAccountRoot
-import com.uk.ac.tees.mad.habitloop.presentation.auth.forgot.ForgotRoot
-import com.uk.ac.tees.mad.habitloop.presentation.auth.login.LoginRoot
-import com.uk.ac.tees.mad.habitloop.presentation.dashboard.DashboardRoot
-import com.uk.ac.tees.mad.habitloop.presentation.profile.ProfileRoot
-import com.uk.ac.tees.mad.habitloop.presentation.setting.SettingRoot
-import com.uk.ac.tees.mad.habitloop.presentation.splash.SplashScreen
+import com.uk.ac.tees.mad.hydrateme.presentation.auth.create_account.CreateAccountRoot
+import com.uk.ac.tees.mad.hydrateme.presentation.auth.forgot.ForgotRoot
+import com.uk.ac.tees.mad.hydrateme.presentation.auth.login.LoginRoot
+
 import kotlinx.serialization.Serializable
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Navigation(navcontroller: NavHostController){
 
-    NavHost(navController = navcontroller, startDestination = GraphRoutes.Splash){
+    NavHost(navController = navcontroller, startDestination = GraphRoutes.Login){
 
-        composable<GraphRoutes.Splash> {
-            SplashScreen(
-                onTimeout = {
-                    val destination = if (FirebaseAuth.getInstance().currentUser != null) GraphRoutes.DashBoard else GraphRoutes.Login
-                    navcontroller.navigate(destination) {
-                        popUpTo<GraphRoutes.Splash> { inclusive = true }
-                    }
-                }
-            )
-        }
+//        composable<GraphRoutes.Splash> {
+//            SplashScreen(
+//                onTimeout = {
+//                    val destination = if (FirebaseAuth.getInstance().currentUser != null) GraphRoutes.DashBoard else GraphRoutes.Login
+//                    navcontroller.navigate(destination) {
+//                        popUpTo<GraphRoutes.Splash> { inclusive = true }
+//                    }
+//                }
+//            )
+//        }
 
         composable<GraphRoutes.Login>{
          LoginRoot(
@@ -73,16 +68,8 @@ fun Navigation(navcontroller: NavHostController){
             )
         }
 
-        composable<GraphRoutes.DashBoard>{
-            DashboardRoot(navController = navcontroller)
-        }
 
-        composable<GraphRoutes.AddHabbit>{
-            AddHabbitRoot(navController = navcontroller)
-        }
 
-        composable<GraphRoutes.Profile> { ProfileRoot(navController = navcontroller) }
-        composable<GraphRoutes.Settings> { SettingRoot(navController = navcontroller) }
 
     }
 
@@ -99,10 +86,8 @@ sealed class GraphRoutes {
     data object DashBoard : GraphRoutes()
     @Serializable
     data object Forgot : GraphRoutes()
-    @Serializable
-    data class AddHabbit(val id: String? = null) : GraphRoutes()
+
     @Serializable
     data object Profile : GraphRoutes()
-    @Serializable
-    data object Settings : GraphRoutes()
+
 }

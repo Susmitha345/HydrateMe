@@ -1,9 +1,9 @@
-package com.uk.ac.tees.mad.habitloop.presentation.auth.forgot
+package com.uk.ac.tees.mad.hydrateme.presentation.auth.forgot
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.uk.ac.tees.mad.habitloop.domain.AuthRepository
-import com.uk.ac.tees.mad.habitloop.domain.util.Result
+import com.uk.ac.tees.mad.hydrateme.domain.util.Result
+import com.uk.ac.tees.mad.hydrateme.domain.AuthRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

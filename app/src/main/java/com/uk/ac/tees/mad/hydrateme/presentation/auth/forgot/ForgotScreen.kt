@@ -1,5 +1,4 @@
-
-package com.uk.ac.tees.mad.habitloop.presentation.auth.forgot
+package com.uk.ac.tees.mad.hydrateme.presentation.auth.forgot
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -30,11 +29,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.uk.ac.tees.mad.hydrateme.R
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.uk.ac.tees.mad.habitloop.R
-import com.uk.ac.tees.mad.habitloop.domain.util.ObserveAsEvents
-import com.uk.ac.tees.mad.habitloop.ui.theme.HabitLoopTheme
+import com.uk.ac.tees.mad.hydrateme.domain.util.ObserveAsEvents
+import com.uk.ac.tees.mad.hydrateme.ui.theme.HydrateMeTheme
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -181,7 +180,7 @@ fun ForgotScreen(
 @Preview(showBackground = true)
 @Composable
 private fun Preview() {
-    HabitLoopTheme {
+    HydrateMeTheme {
         ForgotScreen(
             state = ForgotState(),
             onAction = {}

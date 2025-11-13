@@ -1,6 +1,6 @@
-package com.uk.ac.tees.mad.habitloop.presentation.auth.login
+package com.uk.ac.tees.mad.hydrateme.presentation.auth.login
 
-import com.uk.ac.tees.mad.habitloop.domain.util.DataError
+import com.uk.ac.tees.mad.hydrateme.domain.util.DataError
 
 sealed interface LoginEvent {
     object Success : LoginEvent

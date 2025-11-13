@@ -1,4 +1,4 @@
-package com.uk.ac.tees.mad.habitloop.presentation.auth.login
+package com.uk.ac.tees.mad.hydrateme.presentation.auth.login
 
 data class LoginState(
     val email: String = "",

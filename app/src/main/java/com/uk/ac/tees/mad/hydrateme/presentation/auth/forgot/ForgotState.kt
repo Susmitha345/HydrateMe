@@ -1,4 +1,4 @@
-package com.uk.ac.tees.mad.habitloop.presentation.auth.forgot
+package com.uk.ac.tees.mad.hydrateme.presentation.auth.forgot
 
 data class ForgotState(
     val email: String = "",

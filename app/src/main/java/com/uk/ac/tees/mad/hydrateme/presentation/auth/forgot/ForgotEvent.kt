@@ -1,6 +1,6 @@
-package com.uk.ac.tees.mad.habitloop.presentation.auth.forgot
+package com.uk.ac.tees.mad.hydrateme.presentation.auth.forgot
 
-import com.uk.ac.tees.mad.habitloop.domain.util.DataError
+import com.uk.ac.tees.mad.hydrateme.domain.util.DataError
 
 sealed interface ForgotEvent {
     object Success : ForgotEvent
