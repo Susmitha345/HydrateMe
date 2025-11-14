@@ -2,6 +2,7 @@ package com.uk.ac.tees.mad.hydrateme.presentation.navigation
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -51,7 +52,7 @@ fun Navigation(navcontroller: NavHostController){
                     }
                 },
                 onCreateAccountSuccess = {
-                    navcontroller.navigate(GraphRoutes.DashBoard) {
+                    navcontroller.navigate(GraphRoutes.Login) {
                         popUpTo(GraphRoutes.Register) { inclusive = true }
                     }
                 }
@@ -66,6 +67,10 @@ fun Navigation(navcontroller: NavHostController){
                     }
                 }
             )
+        }
+
+        composable<GraphRoutes.DashBoard> {
+            Text(text = "Dashboard Screen")
         }
 
 

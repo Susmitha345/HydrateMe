@@ -3,20 +3,9 @@ package com.uk.ac.tees.mad.hydrateme.di
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.uk.ac.tees.mad.hydrateme.data.AuthRepositoryImpl
-import com.uk.ac.tees.mad.hydrateme.data.hydratemeRepositoryImp
-import com.uk.ac.tees.mad.hydrateme.data.QuoteRepositoryImp
-import com.uk.ac.tees.mad.hydrateme.data.SupabaseStorageRepositoryImpl
-import com.uk.ac.tees.mad.hydrateme.data.notification.NotificationScheduler
-import com.uk.ac.tees.mad.hydrateme.domain.hydratemeRepository
-import com.uk.ac.tees.mad.hydrateme.domain.QuoteRepository
-import com.uk.ac.tees.mad.hydrateme.domain.SupabaseStorageRepository
-import com.uk.ac.tees.mad.hydrateme.presentation.add_habbit.AddHabbitViewModel
 import com.uk.ac.tees.mad.hydrateme.presentation.auth.create_account.CreateAccountViewModel
 import com.uk.ac.tees.mad.hydrateme.presentation.auth.forgot.ForgotViewModel
 import com.uk.ac.tees.mad.hydrateme.presentation.auth.login.LoginViewModel
-import com.uk.ac.tees.mad.hydrateme.presentation.dashboard.DashboardViewModel
-import com.uk.ac.tees.mad.hydrateme.presentation.profile.ProfileViewModel
-import com.uk.ac.tees.mad.hydrateme.presentation.setting.SettingViewModel
 import com.uk.ac.tees.mad.hydrateme.domain.AuthRepository
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.createSupabaseClient
@@ -62,24 +51,14 @@ val appModule = module {
     single { get<SupabaseClient>().storage }
 
 
-
-
-
     // Repositories
-    single<hydratemeRepository> { hydratemeRepositoryImp(get(), get(), get()) }
-    single<AuthRepository> { AuthRepositoryImpl(get(), get(), get(),get()) }
-    single<QuoteRepository> { QuoteRepositoryImp(get(), get()) }
-    single<SupabaseStorageRepository> { SupabaseStorageRepositoryImpl(get()) }
+    single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
 
     // Notification
-    single { NotificationScheduler(androidContext()) }
 
     // ViewModels
-    viewModel { DashboardViewModel(get(), get()) }
-    viewModel { params -> AddHabbitViewModel(get(), get(), params.get()) }
     viewModel { CreateAccountViewModel(get()) }
     viewModel { ForgotViewModel(get()) }
     viewModel { LoginViewModel(get()) }
-    viewModel { ProfileViewModel(get(), get(), get(), get(), get(named("IODispatcher"))) }
-    viewModel { SettingViewModel(get(), get(), get(), get(named("IODispatcher"))) }
+
 }
