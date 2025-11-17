@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import com.uk.ac.tees.mad.hydrateme.presentation.auth.create_account.CreateAccountRoot
 import com.uk.ac.tees.mad.hydrateme.presentation.auth.forgot.ForgotRoot
 import com.uk.ac.tees.mad.hydrateme.presentation.auth.login.LoginRoot
+import com.uk.ac.tees.mad.hydrateme.presentation.home.HomeRoot
 
 import kotlinx.serialization.Serializable
 
@@ -70,7 +71,7 @@ fun Navigation(navcontroller: NavHostController){
         }
 
         composable<GraphRoutes.DashBoard> {
-            Text(text = "Dashboard Screen")
+            HomeRoot()
         }
 
 

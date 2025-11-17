@@ -10,7 +10,6 @@ activityCompose = "1.11.0"
 composeBom = "2025.10.00"
 firebaseBom = "33.1.1"
 
-
 #external
 
 materialIconsExtended = "1.7.8"
