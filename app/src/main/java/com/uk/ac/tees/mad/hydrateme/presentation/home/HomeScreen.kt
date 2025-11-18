@@ -1,6 +1,5 @@
 package com.uk.ac.tees.mad.hydrateme.presentation.home
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.ShowChart
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Notifications
@@ -51,26 +51,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.uk.ac.tees.mad.hydrateme.R
 import com.uk.ac.tees.mad.hydrateme.ui.theme.HydrateMeTheme
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun HomeRoot(
-    viewModel: HomeViewModel = viewModel()
-) {
+fun HomeRoot() {
+    val viewModel: HomeViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     HomeScreen(
@@ -109,13 +101,14 @@ fun HomeScreen(
             )
         },
         bottomBar = {
-            BottomNavigationBar(
-                onAddClick = { onAction(HomeAction.AddWater(250)) }
+            // ⬇ Quick-add row is now ANCHORED above the navigation bar so it never scrolls away
+            BottomArea(
+                onQuickAdd = onAction,
+                onNavAdd = { onAction(HomeAction.AddWater(250)) }
             )
-        }
-        ,
+        },
         floatingActionButton = {
-            // Optional: keep a FAB too; remove if you only want the bottom bar Add
+            // Move FAB to the END so the middle bottom-bar icon is fully visible
             FloatingActionButton(
                 onClick = { onAction(HomeAction.AddWater(250)) },
                 shape = CircleShape,
@@ -139,19 +132,26 @@ fun HomeScreen(
         ) {
             WaterIntakeCard(state)
             Spacer(modifier = Modifier.height(24.dp))
-            QuoteCard()
+            QuoteCard(state = state, onAction = onAction)
             Spacer(modifier = Modifier.height(24.dp))
-            TodayLogsCard(state)
-            Spacer(modifier = Modifier.weight(1f))
-            QuickAddButtons(onAction)
+            TodayLogsCard(state, modifier = Modifier.weight(1f))
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
 
-// -----------------------------------------------------------------------------------------------
-// UI Sections
-// -----------------------------------------------------------------------------------------------
+@Composable
+private fun BottomArea(
+    onQuickAdd: (HomeAction) -> Unit,
+    onNavAdd: () -> Unit,
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        // ⬇ Always visible quick-add buttons (200 ml & 400 ml)
+        QuickAddButtons(onAction = onQuickAdd)
+        // ⬇ Navigation bar with a WORKING center Add icon
+        BottomNavigationBar(onAdd = onNavAdd)
+    }
+}
 
 @Composable
 fun WaterIntakeCard(state: HomeState) {
@@ -169,11 +169,9 @@ fun WaterIntakeCard(state: HomeState) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_water_bottle), // ensure this exists
-                contentDescription = "Water bottle icon",
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(48.dp)
+            AnimatedWaterBottle(
+                modifier = Modifier.size(100.dp),
+                waterPercentage = (if (state.dailyGoal == 0) 0f else state.waterConsumed.toFloat() / state.dailyGoal.toFloat())
             )
             Text(
                 text = "${state.waterConsumed} / ${state.dailyGoal} ml",
@@ -191,7 +189,7 @@ fun WaterIntakeCard(state: HomeState) {
 }
 
 @Composable
-fun QuoteCard() {
+fun QuoteCard(state: HomeState, onAction: (HomeAction) -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
@@ -200,31 +198,46 @@ fun QuoteCard() {
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+        Box(
+            modifier = Modifier.padding(20.dp)
         ) {
-            Text(
-                text = "\"The body is mainly water. The brain is 75% water, blood is 83% water, and muscles are 75% water. Drink up!\"",
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center,
-                lineHeight = 20.sp,
-                fontWeight = FontWeight.Medium
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "- HydrateMe Team",
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "\"${state.quote}\"",
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 20.sp,
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "- ${state.quoteAuthor}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            }
+            IconButton(
+                onClick = { onAction(HomeAction.FetchNewQuote) },
+                modifier = Modifier.align(Alignment.BottomEnd)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Refresh,
+                    contentDescription = "Refresh Quote",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
         }
     }
 }
 
 @Composable
-fun TodayLogsCard(state: HomeState) {
+fun TodayLogsCard(state: HomeState, modifier: Modifier = Modifier) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
     ) {
         Text(
@@ -260,13 +273,16 @@ fun TodayLogsCard(state: HomeState) {
 @Composable
 fun QuickAddButtons(onAction: (HomeAction) -> Unit) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.Start),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Button(
             onClick = { onAction(HomeAction.AddWater(200)) },
-            shape = CircleShape,
+            shape = RoundedCornerShape(24.dp),
+            modifier = Modifier.weight(1f),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.White,
                 contentColor = Color.Black
@@ -276,16 +292,21 @@ fun QuickAddButtons(onAction: (HomeAction) -> Unit) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
             ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add 200ml", modifier = Modifier.size(20.dp))
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add 200ml",
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(Modifier.size(6.dp))
                 Text(text = "200 ml")
             }
         }
 
         Button(
-            onClick = { onAction(HomeAction.AddWater(500)) },
-            shape = CircleShape,
+            onClick = { onAction(HomeAction.AddWater(400)) },
+            shape = RoundedCornerShape(24.dp),
+            modifier = Modifier.weight(1f),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.White,
                 contentColor = Color.Black
@@ -295,18 +316,18 @@ fun QuickAddButtons(onAction: (HomeAction) -> Unit) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
             ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add 500ml", modifier = Modifier.size(20.dp))
-                Text(text = "500 ml")
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add 400ml",
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(Modifier.size(6.dp))
+                Text(text = "400 ml")
             }
         }
     }
 }
-
-// -----------------------------------------------------------------------------------------------
-// Bottom Navigation
-// -----------------------------------------------------------------------------------------------
 
 data class BottomNavItem(
     val label: String,
@@ -316,12 +337,12 @@ data class BottomNavItem(
 
 @Composable
 fun BottomNavigationBar(
-    onAddClick: () -> Unit = {}
+    onAdd: () -> Unit
 ) {
     var selectedItem by remember { mutableIntStateOf(0) }
     val items = listOf(
         BottomNavItem("Home", Icons.Filled.Home, Icons.Outlined.Home),
-        BottomNavItem("Add", Icons.Default.Add, Icons.Default.Add), // now renders like others
+        BottomNavItem("Add", Icons.Filled.Add, Icons.Filled.Add), // Center add ICON is now visible
         BottomNavItem("Stats", Icons.Filled.ShowChart, Icons.Outlined.ShowChart),
         BottomNavItem("Profile", Icons.Filled.Person, Icons.Outlined.Person)
     )
@@ -336,8 +357,11 @@ fun BottomNavigationBar(
             NavigationBarItem(
                 selected = isSelected,
                 onClick = {
-                    selectedItem = index
-                    if (item.label == "Add") onAddClick()
+                    if (item.label == "Add") {
+                        onAdd()
+                    } else {
+                        selectedItem = index
+                    }
                 },
                 icon = {
                     Icon(
@@ -362,10 +386,6 @@ fun BottomNavigationBar(
         }
     }
 }
-
-// -----------------------------------------------------------------------------------------------
-// Preview
-// -----------------------------------------------------------------------------------------------
 
 @Preview(showBackground = true, widthDp = 375, heightDp = 812)
 @Composable

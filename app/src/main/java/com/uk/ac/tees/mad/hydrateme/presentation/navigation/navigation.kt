@@ -2,7 +2,6 @@ package com.uk.ac.tees.mad.hydrateme.presentation.navigation
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -11,31 +10,24 @@ import com.uk.ac.tees.mad.hydrateme.presentation.auth.create_account.CreateAccou
 import com.uk.ac.tees.mad.hydrateme.presentation.auth.forgot.ForgotRoot
 import com.uk.ac.tees.mad.hydrateme.presentation.auth.login.LoginRoot
 import com.uk.ac.tees.mad.hydrateme.presentation.home.HomeRoot
-
+import com.uk.ac.tees.mad.hydrateme.presentation.splash.SplashScreen
 import kotlinx.serialization.Serializable
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Navigation(navcontroller: NavHostController){
 
-    NavHost(navController = navcontroller, startDestination = GraphRoutes.Login){
+    NavHost(navController = navcontroller, startDestination = Screen.SplashScreen.route){
 
-//        composable<GraphRoutes.Splash> {
-//            SplashScreen(
-//                onTimeout = {
-//                    val destination = if (FirebaseAuth.getInstance().currentUser != null) GraphRoutes.DashBoard else GraphRoutes.Login
-//                    navcontroller.navigate(destination) {
-//                        popUpTo<GraphRoutes.Splash> { inclusive = true }
-//                    }
-//                }
-//            )
-//        }
+        composable(Screen.SplashScreen.route) {
+            SplashScreen(navController = navcontroller)
+        }
 
-        composable<GraphRoutes.Login>{
+        composable(Screen.LoginScreen.route){
          LoginRoot(
              onLoginSuccess = {
-                 navcontroller.navigate(GraphRoutes.DashBoard){
-                     popUpTo(GraphRoutes.Login){
+                 navcontroller.navigate(Screen.HomeScreen.route){
+                     popUpTo(Screen.LoginScreen.route){
                          inclusive = true
                      }
                  }
@@ -48,12 +40,12 @@ fun Navigation(navcontroller: NavHostController){
         composable<GraphRoutes.Register>{
             CreateAccountRoot(
                 onSignInClick = {
-                    navcontroller.navigate(GraphRoutes.Login) {
+                    navcontroller.navigate(Screen.LoginScreen.route) {
                         popUpTo(GraphRoutes.Register) { inclusive = true }
                     }
                 },
                 onCreateAccountSuccess = {
-                    navcontroller.navigate(GraphRoutes.Login) {
+                    navcontroller.navigate(Screen.LoginScreen.route) {
                         popUpTo(GraphRoutes.Register) { inclusive = true }
                     }
                 }
@@ -63,14 +55,14 @@ fun Navigation(navcontroller: NavHostController){
         composable<GraphRoutes.Forgot>{
             ForgotRoot(
                 onBackToLogin = {
-                    navcontroller.navigate(GraphRoutes.Login) {
+                    navcontroller.navigate(Screen.LoginScreen.route) {
                         popUpTo(GraphRoutes.Forgot) { inclusive = true }
                     }
                 }
             )
         }
 
-        composable<GraphRoutes.DashBoard> {
+        composable(Screen.HomeScreen.route) {
             HomeRoot()
         }
 

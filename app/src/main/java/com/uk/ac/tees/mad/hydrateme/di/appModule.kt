@@ -3,62 +3,61 @@ package com.uk.ac.tees.mad.hydrateme.di
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.uk.ac.tees.mad.hydrateme.data.AuthRepositoryImpl
-import com.uk.ac.tees.mad.hydrateme.presentation.auth.create_account.CreateAccountViewModel
-import com.uk.ac.tees.mad.hydrateme.presentation.auth.forgot.ForgotViewModel
-import com.uk.ac.tees.mad.hydrateme.presentation.auth.login.LoginViewModel
+import com.uk.ac.tees.mad.hydrateme.data.local.AppDatabase
+import com.uk.ac.tees.mad.hydrateme.data.remote.ZenQuotesApiService
+import com.uk.ac.tees.mad.hydrateme.data.repository.QuoteRepository
+import com.uk.ac.tees.mad.hydrateme.data.repository.QuoteRepositoryImpl
+import com.uk.ac.tees.mad.hydrateme.data.repository.WaterDataRepository
+import com.uk.ac.tees.mad.hydrateme.data.repository.WaterDataRepositoryImpl
 import com.uk.ac.tees.mad.hydrateme.domain.AuthRepository
-import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.createSupabaseClient
-import io.github.jan.supabase.storage.Storage
-import io.github.jan.supabase.storage.storage
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.serialization.kotlinx.json.json
-import kotlinx.serialization.json.Json
+import com.uk.ac.tees.mad.hydrateme.presentation.auth.login.LoginViewModel
+import com.uk.ac.tees.mad.hydrateme.presentation.home.HomeViewModel
+import com.uk.ac.tees.mad.hydrateme.presentation.splash.SplashViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val appModule = module {
 
-
-    // Firebase
-    single { FirebaseAuth.getInstance() }
-    single { FirebaseFirestore.getInstance() }
-
-    // Ktor Client
     single {
-        HttpClient(OkHttp) {
-            install(ContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                })
-            }
-        }
+        AppDatabase.getDatabase(androidContext()).waterLogDao()
     }
 
-    // Supabase
-    single {
-        createSupabaseClient(
-            supabaseUrl = "https://kvdagjrceetbstkqanlf.supabase.co",
-            supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2ZGFnanJjZWV0YnN0a3FhbmxmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA1NTgwODQsImV4cCI6MjA3NjEzNDA4NH0.7S3oqGekCWggEMtaCne9JknjhqlGdpcxFZvUEurmRGI"
-        ) {
-            install(Storage)
-        }
+    single<QuoteRepository> {
+        QuoteRepositoryImpl(apiService = get())
     }
-    single { get<SupabaseClient>().storage }
 
+    single<WaterDataRepository> {
+        val auth = get<FirebaseAuth>()
+        val userId = auth.currentUser?.uid ?: "default_user" // Use a default or handle unauthenticated state
+        WaterDataRepositoryImpl(waterLogDao = get(), firestore = get(), userId = userId)
+    }
 
-    // Repositories
-    single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
+    single<AuthRepository> {
+        AuthRepositoryImpl(firebaseAuth = get(), firestore = get())
+    }
 
-    // Notification
+    single {
+        ZenQuotesApiService.create()
+    }
 
-    // ViewModels
-    viewModel { CreateAccountViewModel(get()) }
-    viewModel { ForgotViewModel(get()) }
-    viewModel { LoginViewModel(get()) }
+    single {
+        FirebaseFirestore.getInstance()
+    }
 
+    single {
+        FirebaseAuth.getInstance()
+    }
+
+    viewModel {
+        HomeViewModel(waterDataRepository = get(), quoteRepository = get())
+    }
+
+    viewModel {
+        LoginViewModel(authRepository = get())
+    }
+
+    viewModel {
+        SplashViewModel(authRepository = get(), quoteRepository = get())
+    }
 }

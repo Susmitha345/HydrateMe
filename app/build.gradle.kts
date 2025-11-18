@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.ksp)
     alias (libs.plugins.kotlin.serialization)
+    id("kotlin-kapt")
 }
 
 android {
@@ -52,7 +53,7 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.material3)
+    implementation("androidx.compose.material3:material3:1.2.1") // Explicitly set M3 version
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.androidx.credentials)
@@ -113,4 +114,8 @@ dependencies {
 
     // Accompanist
     implementation(libs.accompanist.permissions)
+
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
 }

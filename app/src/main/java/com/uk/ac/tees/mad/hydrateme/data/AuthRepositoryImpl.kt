@@ -46,7 +46,7 @@ class AuthRepositoryImpl(
         }
     }
 
-
-
-
+    override fun isUserAuthenticated(): Boolean {
+        return firebaseAuth.currentUser != null
+    }
 }

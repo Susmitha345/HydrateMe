@@ -2,60 +2,68 @@ package com.uk.ac.tees.mad.hydrateme.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.uk.ac.tees.mad.hydrateme.data.repository.QuoteRepository
+import com.uk.ac.tees.mad.hydrateme.data.repository.WaterDataRepository
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import kotlinx.coroutines.launch
 
-class HomeViewModel : ViewModel() {
-
-    private var hasLoadedInitialData = false
+class HomeViewModel(
+    private val waterDataRepository: WaterDataRepository,
+    private val quoteRepository: QuoteRepository
+) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeState())
-    val state = _state
-        .onStart {
-            if (!hasLoadedInitialData) {
-                /** Load initial data here (e.g., from a database or repository) **/
-                // For demonstration, we'll populate it with some sample data.
-                _state.value = HomeState(
-                    waterConsumed = 1200,
-                    dailyGoal = 2500,
-                    todayLogs = listOf(
-                        WaterLog("8:30 AM", 300),
-                        WaterLog("10:15 AM", 250),
-                        WaterLog("1:00 PM", 400),
-                        WaterLog("3:45 PM", 250)
-                    ),
-                    userName = "Alex"
-                )
-                hasLoadedInitialData = true
-            }
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = HomeState()
-        )
+    val state = _state.asStateFlow()
+
+    init {
+        fetchNewQuote()
+        observeWaterLogs()
+        syncLogs()
+    }
 
     fun onAction(action: HomeAction) {
         when (action) {
             is HomeAction.AddWater -> addWater(action.amount)
+            HomeAction.FetchNewQuote -> fetchNewQuote()
+            HomeAction.SyncLogs -> syncLogs()
         }
     }
 
     private fun addWater(amount: Int) {
-        val currentTime = SimpleDateFormat("h:mm a", Locale.getDefault()).format(Date())
-        val newLog = WaterLog(time = currentTime, amount = amount)
+        viewModelScope.launch {
+            waterDataRepository.addWaterLog(amount)
+        }
+    }
 
-        _state.update { currentState ->
-            currentState.copy(
-                waterConsumed = currentState.waterConsumed + amount,
-                todayLogs = currentState.todayLogs + newLog
-            )
+    private fun fetchNewQuote() {
+        viewModelScope.launch {
+            val quote = quoteRepository.getRandomQuote()
+            if (quote != null) {
+                _state.update { it.copy(quote = quote.q, quoteAuthor = quote.a) }
+            }
+        }
+    }
+
+    private fun observeWaterLogs() {
+        viewModelScope.launch {
+            waterDataRepository.getTodayLogs().collectLatest { logs ->
+                val totalConsumed = logs.sumOf { it.amount }
+                _state.update {
+                    it.copy(
+                        todayLogs = logs,
+                        waterConsumed = totalConsumed
+                    )
+                }
+            }
+        }
+    }
+
+    private fun syncLogs() {
+        viewModelScope.launch {
+            waterDataRepository.syncLogs()
         }
     }
 }
