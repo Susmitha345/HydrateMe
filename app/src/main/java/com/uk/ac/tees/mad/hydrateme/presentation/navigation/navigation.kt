@@ -24,17 +24,17 @@ fun Navigation(navcontroller: NavHostController){
         }
 
         composable(Screen.LoginScreen.route){
-         LoginRoot(
-             onLoginSuccess = {
-                 navcontroller.navigate(Screen.HomeScreen.route){
-                     popUpTo(Screen.LoginScreen.route){
-                         inclusive = true
-                     }
-                 }
-                              },
-             onGoToCreateAccount = { navcontroller.navigate(GraphRoutes.Register) },
-             onGoToForgotPassword = { navcontroller.navigate(GraphRoutes.Forgot) }
-         )
+            LoginRoot(
+                onLoginSuccess = {
+                    navcontroller.navigate(Screen.HomeScreen.route){
+                        popUpTo(Screen.LoginScreen.route){
+                            inclusive = true
+                        }
+                    }
+                },
+                onGoToCreateAccount = { navcontroller.navigate(GraphRoutes.Register) },
+                onGoToForgotPassword = { navcontroller.navigate(GraphRoutes.Forgot) }
+            )
         }
 
         composable<GraphRoutes.Register>{
